@@ -53,9 +53,9 @@ export type AIToolResponse = {
 
 export enum UserIntention {
   GREETING = 'GREETING',
-  QUERY_SYMPTOM = 'QUERY_SYMPTOM',
+  PROVIDE_SYMPTOM = 'PROVIDE_SYMPTOM',
+  PROVIDE_PERSONAL_INFO = 'PROVIDE_PERSONAL_INFO',
   QUERY_APPOINTMENT = 'QUERY_APPOINTMENT',
-  PROVIDE_INFORMATION = 'PROVIDE_INFORMATION',
   OTHER = 'OTHER',
 }
 
@@ -64,9 +64,47 @@ export enum AIResponseEvent {
   END = 'end',
 }
 
+export enum PipelineResponseType {
+  STREAM = 'STREAM',
+  END = 'END',
+}
+
+export type PipelineResponse = {
+  type: PipelineResponseType;
+  text?: string;
+  summary?: string;
+};
+
+export type ExtractInfo = {
+  name: string;
+  symptoms: string[];
+  city: string;
+  state: string;
+};
+
+export enum QueryPatientType {
+  NAME = 'NAME',
+  CITY = 'CITY',
+  STATE = 'STATE',
+  SYMPTOM = 'SYMPTOM',
+}
+
 export interface AIService {
-  // structure: (info: AIMessage, format: unknown) => Promise<AIResponse>;
+  structure: (info: AIMessage, format: unknown) => Promise<unknown>;
   query: (info: AIMessage) => Promise<AIResponse>;
   queryWithTool: (info: AIMessage) => Promise<AIToolResponse | null>;
   queryStream: (info: AIMessage) => Promise<EventEmitter>;
+  getEmbeddings: (text: string[]) => Promise<number[][]>;
 }
+
+export type Disease = {
+  id: string;
+  name: string;
+  symptom: string;
+  treatment: string;
+};
+
+export type DiseaseResponse = {
+  metadatas: Disease[];
+  scores: number[];
+};
