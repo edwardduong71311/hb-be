@@ -1,10 +1,4 @@
-import { EventEmitter } from 'stream';
-
-export enum AIResponseType {
-  FUNCTION = 'function',
-  DIRECT = 'direct',
-  PARSED = 'parsed',
-}
+import EventEmitter from 'events';
 
 export enum AIToolType {
   FUNCTION = 'function',
@@ -38,7 +32,7 @@ export type AITool = {
 
 export type AIMessage = {
   context: string;
-  question: string;
+  question?: string;
   summary?: string;
   instruction?: string;
   example?: string;
@@ -49,15 +43,30 @@ export type AIMessage = {
 };
 
 export type AIResponse = {
-  type: AIResponseType;
-  tool?: string;
-  toolData?: AIToolData;
-  content?: string | null;
-  parsed?: unknown;
+  content: string | null;
 };
+
+export type AIToolResponse = {
+  function: string;
+  data: AIToolData;
+};
+
+export enum UserIntention {
+  GREETING = 'GREETING',
+  QUERY_SYMPTOM = 'QUERY_SYMPTOM',
+  QUERY_APPOINTMENT = 'QUERY_APPOINTMENT',
+  PROVIDE_INFORMATION = 'PROVIDE_INFORMATION',
+  OTHER = 'OTHER',
+}
+
+export enum AIResponseEvent {
+  CONTENT = 'content',
+  END = 'end',
+}
 
 export interface AIService {
   // structure: (info: AIMessage, format: unknown) => Promise<AIResponse>;
   query: (info: AIMessage) => Promise<AIResponse>;
-  // queryStream: (info: AIMessage) => Promise<EventEmitter>;
+  queryWithTool: (info: AIMessage) => Promise<AIToolResponse | null>;
+  queryStream: (info: AIMessage) => Promise<EventEmitter>;
 }

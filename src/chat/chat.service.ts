@@ -1,15 +1,12 @@
-import { greeting } from '@/ai/prompts/greeting';
+import ChainOfThought from '@/ai/pipeline';
 import { AIService } from '@/types/ai.types';
+import { ChatResponse } from '@/types/chat.type';
 import { Inject, Injectable } from '@nestjs/common';
+import { map, Observable } from 'rxjs';
 
 @Injectable()
 export class ChatService {
-  constructor(@Inject('AIService') private aiService: AIService) {}
-
-  async getAnswer(text: string) {
-    const res = await greeting(text, this.aiService);
-    console.log('Bot response: ' + res.content);
-
+  constructor(@Inject('AIService') private aiService: AIService) {
     // this.httpService
     //   .get('http://localhost:9090/symptoms/all', {
     //     headers: {
@@ -24,5 +21,22 @@ export class ChatService {
     // return {
     //   data: 'Hello World!',
     // };
+  }
+
+  getAnswer(text: string): Observable<ChatResponse> {
+    return new Observable<ChatResponse>((subscriber) => {
+      new ChainOfThought(text, this.aiService).run().subscribe({
+        next: (data: string) => {
+          subscriber.next({
+            text: data,
+          });
+        },
+        complete: () => {
+          subscriber.complete();
+        },
+      });
+
+      return function unsubscribe() {};
+    });
   }
 }
