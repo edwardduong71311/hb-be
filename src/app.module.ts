@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { ChatController } from '@/chat/chat.controller';
-import { ChatService } from '@/chat/chat.service';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ChatController } from '@/controller/chat.controller';
+import { ChatService } from '@/service/chat.service';
+import { ConfigModule } from '@nestjs/config';
 import { OpenAIModule } from '@/ai.module';
+import { DynamoChatRepo } from './repo/chat.repo';
+import DiseaseService from './service/disease.service';
+import { DiseaseRepo } from './repo/disease.repo';
 
 @Module({
   imports: [
@@ -15,6 +18,6 @@ import { OpenAIModule } from '@/ai.module';
     OpenAIModule.register(),
   ],
   controllers: [ChatController],
-  providers: [ChatService],
+  providers: [ChatService, DiseaseService, DiseaseRepo, DynamoChatRepo],
 })
 export class AppModule {}

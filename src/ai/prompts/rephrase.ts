@@ -18,7 +18,7 @@ export default class RephrasePrompt {
             - Make it short and do not change the meaning.
             [Important] Do not answer, only rephrase the sentence.`,
           question: input,
-          temperature: 0.2,
+          temperature: 0.1,
           top_p: 0.1,
         })
         .then((data: AIResponse) => {

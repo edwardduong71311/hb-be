@@ -20,19 +20,19 @@ export default class IntentDetectionPrompt {
           description: 'Call this function when user greet us',
         },
         {
-          name: UserIntention.QUERY_SYMPTOM,
+          name: UserIntention.PROVIDE_SYMPTOM,
           description:
             'Call this when customer describe their symptoms or health status',
+        },
+        {
+          name: UserIntention.PROVIDE_PERSONAL_INFO,
+          description:
+            'Call this when user provide their Name or Preferred City, County or State',
         },
         {
           name: UserIntention.QUERY_APPOINTMENT,
           description:
             'Call this when customer want to book healthcare appointment with us',
-        },
-        {
-          name: UserIntention.PROVIDE_INFORMATION,
-          description:
-            'Call this when user provide their Name or Preferred City, County or State',
         },
       ];
 

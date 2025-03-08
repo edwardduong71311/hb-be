@@ -1,7 +1,7 @@
 import { AIService } from '@/types/ai.types';
 import { EventEmitter } from 'events';
 
-export default class GreetingPrompt {
+export default class GreetPrompt {
   service: AIService;
 
   constructor(service: AIService) {

@@ -1,6 +1,8 @@
 import { Module, DynamicModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import OpenAIService from '@/ai/vendors/openai.model';
+import { DiseaseRepo } from './repo/disease.repo';
+import DefaultDiseaseService from './service/disease.service';
 
 @Module({})
 export class OpenAIModule {
@@ -12,9 +14,11 @@ export class OpenAIModule {
         {
           provide: 'AIService',
           useFactory: (configService: ConfigService) => {
-            const aiToken = configService.get<string>('AI_TOKEN');
-            const model = configService.get<string>('QUESTION_MODEL');
-            return new OpenAIService(model!, aiToken!);
+            return new OpenAIService(
+              configService.get<string>('QUESTION_MODEL')!,
+              configService.get<string>('EMBEDDING_MODEL')!,
+              configService.get<string>('AI_TOKEN')!,
+            );
           },
           inject: [ConfigService],
         },

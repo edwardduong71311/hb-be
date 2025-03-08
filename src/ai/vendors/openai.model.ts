@@ -8,15 +8,20 @@ import {
 } from '@/types/ai.types';
 import { EventEmitter } from 'events';
 import OpenAI from 'openai';
-import { ChatCompletionCreateParamsNonStreaming } from 'openai/resources';
+import {
+  ChatCompletionCreateParamsNonStreaming,
+  ResponseFormatText,
+} from 'openai/resources';
 import { Stream } from 'openai/streaming';
 
 export default class OpenAIService implements AIService {
   private client: OpenAI;
-  model: string;
+  private model: string;
+  private embeddingModel: string;
 
-  constructor(model: string, token: string) {
-    this.model = model;
+  constructor(questionModel: string, embeddingModel: string, token: string) {
+    this.model = questionModel;
+    this.embeddingModel = embeddingModel;
     this.client = new OpenAI({ apiKey: token });
   }
 
@@ -34,12 +39,6 @@ export default class OpenAIService implements AIService {
     if (info.example) {
       context += `\n[Example]: \n${info.example}`;
     }
-
-    console.log('----Context----');
-    console.log(context);
-    console.log('----Input----');
-    console.log(info.question);
-    console.log();
 
     return context;
   };
@@ -143,5 +142,30 @@ export default class OpenAIService implements AIService {
       }
     }
     emitter.emit(AIResponseEvent.END);
+  };
+
+  structure = async (info: AIMessage, format: unknown): Promise<unknown> => {
+    const completion = await this.client.beta.chat.completions.parse({
+      messages: [
+        {
+          role: 'system',
+          content: this.formContext(info),
+        },
+        { role: 'user', content: info.question || '' },
+      ],
+      ...this.getConfig(info),
+      response_format: format as ResponseFormatText,
+    });
+
+    return completion.choices[0].message.parsed;
+  };
+
+  getEmbeddings = async (texts: string[]): Promise<number[][]> => {
+    const res = await this.client.embeddings.create({
+      model: this.embeddingModel,
+      input: texts,
+    });
+
+    return res.data.map((item) => item.embedding);
   };
 }
