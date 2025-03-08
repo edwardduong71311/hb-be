@@ -10,10 +10,8 @@ export class ChatController {
   @Get()
   @Sse()
   chatWithBot(@Query('text') text: string): Observable<MessageEvent> {
-    this.chatService.getAnswer(text);
-    return interval(200).pipe(
-      map((count) => {
-        const res: ChatResponse = { done: false, text: count.toString() };
+    return this.chatService.getAnswer(text).pipe(
+      map((res: ChatResponse) => {
         const event = new MessageEvent('message', {
           data: JSON.stringify(res),
         });

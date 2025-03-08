@@ -13,7 +13,8 @@ export class OpenAIModule {
           provide: 'AIService',
           useFactory: (configService: ConfigService) => {
             const aiToken = configService.get<string>('AI_TOKEN');
-            return new OpenAIService(aiToken!);
+            const model = configService.get<string>('QUESTION_MODEL');
+            return new OpenAIService(model!, aiToken!);
           },
           inject: [ConfigService],
         },
